@@ -83,6 +83,14 @@ function apiDelete(url, data, success) {
     });
 }
 
+/**
+ * window.location.href
+ * @param url
+ */
+function apiLocation(url) {
+    window.location.href= base+url;
+}
+
 
 /**
  * 菜单树形 工具

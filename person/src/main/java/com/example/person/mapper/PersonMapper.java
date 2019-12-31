@@ -17,6 +17,16 @@ public interface PersonMapper {
      * @throws Exception
      */
     List<PersinInfoVo> queryAll(@Param("param") PersonInDTO inDTO);
+
+    /**
+     * 导出所有人员信息
+     * @param inDTO
+     * @return
+     */
+    List<PersinInfoVo> queryAllExport(@Param("param") PersonInDTO inDTO);
+
+
+
     /**
      * 查询总数据量
      * @param inDTO

@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,23 @@ public class PersonController {
         log.info("PersonController.queryAll  outMap =" + outMap);
         return new Result(ExceptUtil.SUCCESS_CODE_200, outMap, null);
     }
+
+    @RequestMapping(value = "/queryAllExport", method = RequestMethod.GET)
+    @ResponseBody
+    public void queryAllExport( @RequestParam(value = "name",defaultValue = "") String name ,
+                        @RequestParam(value = "xycs",defaultValue = "") String xycs ,
+                        @RequestParam(value = "sex",defaultValue = "") String sex ,
+                        @RequestParam(value = "love",defaultValue = "") String love ,
+                        HttpServletResponse response) throws Exception{
+        PersonInDTO inDTO =new PersonInDTO();
+        inDTO.setName(name);
+        inDTO.setXycs(xycs);
+        inDTO.setSex(sex);
+        inDTO.setLove(love);
+        personService.queryAllExport(inDTO,response);
+
+    }
+
 
 
 

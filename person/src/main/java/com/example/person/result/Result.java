@@ -1,6 +1,8 @@
 package com.example.person.result;
 
+import com.example.person.utils.ExceptUtil;
 import lombok.Data;
+import org.apache.ibatis.reflection.ExceptionUtil;
 
 @Data
 public class Result<T> {
@@ -14,6 +16,5 @@ public class Result<T> {
         this.data = data;
         this.msg = msg;
     }
-
 
 }

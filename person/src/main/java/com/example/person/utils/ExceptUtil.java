@@ -10,6 +10,10 @@ public class ExceptUtil {
      */
     public static Integer SUCCESS_CODE_200 = 200;
     /**
+     * 文件上传失败
+     */
+    public static Integer FAILED_CODE_400 = 400;
+    /**
      * 入参为空
      */
     public static Integer INPAR_CODE_100 = 100;

@@ -27,6 +27,28 @@
         WHERE RN BETWEEN (#{param.pageNo}-1 )* #{param.pageSize} +1 AND #{param.pageNo}* #{param.pageSize}
     </select>
 
+    <!--导出所有人员信息 -->
+    <select id="queryAllExport" parameterType="com.example.person.dto.PersonInDTO" resultType="com.example.person.vo.PersinInfoVo">
+     SELECT @rownum:=@rownum+1 AS RN, P.P_ID  id,P.NAME,P.SEX,P.CSNY,P.CSDZ,P.XZDZ,P.SHJN,P.XYCS,P.GZSC,P.HYZK,P.SFZHM ,P.SJHM,
+        P.WXHM,P.QQHM,P.JTZK,P.GSZW,P.LOVE
+        FROM  (SELECT @rownum:=0) r, P_PERSON_INFO P
+        WHERE 1=1
+        <if test="param.name !=null and param.name !=''">
+            AND  NAME LIKE  CONCAT('%',CONCAT(#{param.name},'%'))
+        </if>
+        <if test="param.xycs !=null and param.xycs !=''">
+            AND  XYCS LIKE  CONCAT('%',CONCAT(#{param.xycs},'%'))
+        </if>
+        <if test="param.sex !=null and param.sex !=''">
+            AND  SEX LIKE CONCAT('%',CONCAT(#{param.sex},'%'))
+        </if>
+        <if test="param.love !=null and param.love !=''">
+            AND  LOVE LIKE CONCAT('%',CONCAT(#{param.love},'%'))
+        </if>
+        ORDER BY CREAT_TIME DESC
+     </select>
+
+
 
     <!--查询总数据量 -->
     <select id="queryAllTotal" parameterType="com.example.person.dto.PersonInDTO" resultType="java.lang.Integer">
