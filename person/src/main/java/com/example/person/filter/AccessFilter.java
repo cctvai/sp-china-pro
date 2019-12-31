@@ -36,6 +36,7 @@ public class AccessFilter implements Filter {
 
         @Override
         public void destroy() {
+            System.out.println(" destroy  destroy  destroy ");
             System.out.println(" person time filter destroy");
         }
 
