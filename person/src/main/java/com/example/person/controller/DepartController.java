@@ -35,14 +35,15 @@ public class DepartController {
         Map<String, Object> outMap = new HashMap<>();
         outMap.put("total", outList.size());
         outMap.put("list", outList);
-        log.info("DepartController.query  outMap =" + outMap);
+        log.info("DepartController.query 11  outMap =" + outMap);
         return new Result(ExceptUtil.SUCCESS_CODE_200, outMap, null);
     }
 
     @RequestMapping(value = "/queryAll", method = RequestMethod.POST)
     @ResponseBody
     public Result queryAll(DepartmentInDTO inDTO) {
-        log.info("DepartController.queryAll  inDTO =" + inDTO);
+
+        log.info("DepartController.queryAll 11 inDTO =" + inDTO);
         List<DepartmentInfoVo> outList = departmentService.queryAll(inDTO);
         Map<String, Object> outMap = new HashMap<>();
         outMap.put("total", departmentService.queryAllTotal(inDTO));
