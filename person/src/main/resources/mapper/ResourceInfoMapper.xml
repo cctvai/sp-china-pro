@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.person.mapper.ResourceInfoMapper">
+
+    <!--菜单资源查询 -->
+    <select id="loginResource" parameterType="java.lang.String" resultType="com.example.person.entity.loginResource">
+        SELECT  P.ID ,P.RESOURCE_CODE, P.RESOURCE_NAME,P.RESOURCE_NAME title,P.PARENT_CODE
+                ,P.RESOURCE_LEVEL ,P.RESOURCE_TYPE, P.RESOURCE_URL, P.CREATE_TIME
+        FROM  P_RESOURCE_INFO P
+    </select>
+
+
+
+    <!--按条件查询所有客户信息 -->
+    <select id="queryAll" parameterType="com.example.person.dto.ResourceInfoInDTO" resultType="com.example.person.vo.ResourceInfoVo">
+        SELECT * FROM (
+        SELECT @rownum:=@rownum+1 AS RN,P.ID ,P.RESOURCE_CODE, P.RESOURCE_NAME,P.PARENT_CODE
+        ,P.RESOURCE_LEVEL ,P.RESOURCE_TYPE, P.RESOURCE_URL, P.CREATE_TIME
+        FROM  (SELECT @rownum:=0) r, P_RESOURCE_INFO P
+        WHERE 1=1
+        <if test="param.resourceCode !=null and param.resourceCode !=''">
+            AND  RESOURCE_CODE LIKE  CONCAT('%',CONCAT(#{param.resourceCode},'%'))
+        </if>
+        <if test="param.resourceName !=null and param.resourceName !=''">
+            AND  RESOURCE_NAME LIKE  CONCAT('%',CONCAT(#{param.resourceName},'%'))
+        </if>
+        <if test="param.parentCode !=null and param.parentCode !=''">
+            AND  PARENT_CODE LIKE CONCAT('%',CONCAT(#{param.parentCode},'%'))
+        </if>
+        <if test="param.resourceLevel !=null ">
+            AND  RESOURCE_LEVEL =#{param.resourceLevel}
+        </if>
+        <if test="param.resourceType !=null  ">
+            AND  RESOURCE_TYPE =#{param.resourceType}
+        </if>
+        <if test="param.resourceUrl !=null and param.resourceUrl !=''">
+            AND  RESOURCE_URL LIKE CONCAT('%',CONCAT(#{param.resourceUrl},'%'))
+        </if>
+        ORDER BY PARENT_CODE,RESOURCE_CODE DESC
+        ) B
+        WHERE RN BETWEEN (#{param.pageNo}-1 )* #{param.pageSize} +1 AND #{param.pageNo}* #{param.pageSize}
+    </select>
+
+
+    <!--查询总数据量 -->
+    <select id="queryAllTotal" parameterType="com.example.person.dto.ResourceInfoInDTO" resultType="java.lang.Integer">
+        SELECT  COUNT(1) CNT
+        FROM    P_RESOURCE_INFO
+        WHERE 1=1
+        <if test="param.resourceCode !=null and param.resourceCode !=''">
+            AND  RESOURCE_CODE LIKE  CONCAT('%',CONCAT(#{param.resourceCode},'%'))
+        </if>
+        <if test="param.resourceName !=null and param.resourceName !=''">
+            AND  RESOURCE_NAME LIKE  CONCAT('%',CONCAT(#{param.resourceName},'%'))
+        </if>
+        <if test="param.parentCode !=null and param.parentCode !=''">
+            AND  PARENT_CODE LIKE CONCAT('%',CONCAT(#{param.parentCode},'%'))
+        </if>
+        <if test="param.resourceLevel !=null ">
+            AND  RESOURCE_LEVEL =#{param.resourceLevel}
+        </if>
+        <if test="param.resourceType !=null  ">
+            AND  RESOURCE_TYPE =#{param.resourceType}
+        </if>
+        <if test="param.resourceUrl !=null and param.resourceUrl !=''">
+            AND  RESOURCE_URL LIKE CONCAT('%',CONCAT(#{param.resourceUrl},'%'))
+        </if>
+
+    </select>
+
+
+    <!--添加addResource-->
+    <insert id="addResource" parameterType="com.example.person.dto.UserInfoAddOrEditInDTO" >
+        INSERT INTO P_RESOURCE_INFO(ID ,RESOURCE_CODE, RESOURCE_NAME,PARENT_CODE ,RESOURCE_LEVEL,RESOURCE_TYPE,RESOURCE_URL,CREATE_TIME)
+        VALUES ( #{param.id},#{param.resourceCode}, #{param.resourceName},#{param.parentCode},
+                 #{param.resourceLevel},#{param.resourceType},#{param.resourceUrl}, SYSDATE() )
+    </insert>
+
+
+
+    <!--修改editResource -->
+    <update id="editResource" parameterType="com.example.person.dto.UserInfoAddOrEditInDTO" >
+        UPDATE P_RESOURCE_INFO SET
+        RESOURCE_CODE=#{param.resourceCode},
+        RESOURCE_NAME=#{param.resourceName},
+        PARENT_CODE=#{param.parentCode},
+        RESOURCE_LEVEL=#{param.resourceLevel},
+        RESOURCE_TYPE=#{param.resourceType},
+        RESOURCE_URL=#{param.resourceUrl}
+        WHERE ID = #{param.id}
+    </update>
+
+    <!--删除 -->
+    <delete id="delete" parameterType="java.lang.String" >
+        DELETE FROM P_RESOURCE_INFO WHERE ID = #{id}
+    </delete>
+
+</mapper>

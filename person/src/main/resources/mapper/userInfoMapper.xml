@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.person.mapper.UserInfoMapper">
+
+    <!--登录获取用户信息 -->
+    <select id="getUserInfoByLoginNo"  parameterType="java.lang.String" resultType="com.example.person.entity.UserInfo">
+        SELECT ID ,LOGIN_NO,USER_NAME ,USER_PASS,USER_PHONE,USER_BMBH
+        FROM P_USER_INFO WHERE LOGIN_NO =#{loginNo}
+    </select>
+
+
+    <!--查询所有客户信息 -->
+    <select id="queryAll" parameterType="com.example.person.dto.UserInfoInDTO" resultType="com.example.person.vo.UserInfoVo">
+        SELECT * FROM (
+        SELECT @rownum:=@rownum+1 AS RN,P.ID ,P.LOGIN_NO,P.USER_NAME , P.USER_PASS, P.USER_PHONE, P.USER_BMBH
+        FROM  (SELECT @rownum:=0) r, P_USER_INFO P
+        WHERE 1=1
+        <if test="param.loginNo !=null and param.loginNo !=''">
+            AND  LOGIN_NO LIKE  CONCAT('%',CONCAT(#{param.loginNo},'%'))
+        </if>
+        <if test="param.userName !=null and param.userName !=''">
+            AND  USER_NAME LIKE  CONCAT('%',CONCAT(#{param.userName},'%'))
+        </if>
+        <if test="param.userPhone !=null and param.userPhone !=''">
+            AND  USER_PHONE LIKE  CONCAT('%',CONCAT(#{param.userPhone},'%'))
+        </if>
+        <if test="param.userBmbh !=null and param.userBmbh !=''">
+            AND  USER_BMBH LIKE CONCAT('%',CONCAT(#{param.userBmbh},'%'))
+        </if>
+        ORDER BY CREATE_TIME DESC
+        ) B
+        WHERE RN BETWEEN (#{param.pageNo}-1 )* #{param.pageSize} +1 AND #{param.pageNo}* #{param.pageSize}
+    </select>
+
+
+    <!--查询总数据量 -->
+    <select id="queryAllTotal" parameterType="com.example.person.dto.UserInfoInDTO" resultType="java.lang.Integer">
+        SELECT  COUNT(1) CNT
+        FROM    P_USER_INFO
+        WHERE 1=1
+        <if test="param.loginNo !=null and param.loginNo !=''">
+            AND  LOGIN_NO LIKE  CONCAT('%',CONCAT(#{param.loginNo},'%'))
+        </if>
+        <if test="param.userName !=null and param.userName !=''">
+            AND  USER_NAME LIKE  CONCAT('%',CONCAT(#{param.userName},'%'))
+        </if>
+        <if test="param.userPhone !=null and param.userPhone !=''">
+            AND  USER_PHONE LIKE  CONCAT('%',CONCAT(#{param.userPhone},'%'))
+        </if>
+        <if test="param.userBmbh !=null and param.userBmbh !=''">
+            AND  USER_BMBH LIKE CONCAT('%',CONCAT(#{param.userBmbh},'%'))
+        </if>
+    </select>
+
+    <!--添加addUser -->
+    <insert id="addUser" parameterType="com.example.person.dto.UserInfoAddOrEditInDTO" >
+        INSERT INTO P_USER_INFO(ID,LOGIN_NO,USER_NAME,USER_PASS,USER_PHONE,USER_BMBH,CREATE_TIME)
+        VALUES ( #{param.id},#{param.loginNo},#{param.userName}, #{param.userPass},#{param.userPhone},#{param.userBmbh}, SYSDATE() )
+    </insert>
+
+
+    <!--修改部门信息 -->
+    <update id="editUser" parameterType="com.example.person.dto.UserInfoAddOrEditInDTO" >
+        UPDATE P_USER_INFO SET
+        LOGIN_NO=#{param.loginNo},
+        USER_NAME=#{param.userName},
+        USER_PASS=#{param.userPass},
+        USER_PHONE=#{param.userPhone},
+        USER_BMBH=#{param.userBmbh}
+        WHERE ID = #{param.id}
+    </update>
+
+    <!--删除 -->
+    <delete id="delete" parameterType="java.lang.String" >
+        DELETE FROM P_USER_INFO WHERE ID = #{id}
+    </delete>
+
+</mapper>

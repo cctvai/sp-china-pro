@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <title>登录</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../static/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="../static/layui/layui.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="../static/layui/procss/adminLogin.css">
+    <script type="text/javascript" src="../static/layui/ajaxUtils.js" charset="utf-8"></script>
+
+</head>
+<body>
+<div class="wrap">
+
+    测试 teatlogin
+</div>
+<script>
+
+
+    layui.use(['layer','jquery'],function () {
+        var layer = layui.layer
+            ,$=layui.jquery;
+        $.ajax({
+            url:'http://localhost:8070/zuul/testZuul/query',    //请求的url地址
+            dataType:"json",   //返回格式为json
+            async:true,//请求是否异步，默认为异步，这也是ajax重要特性
+            data: {}, //{"id":"value"},    //参数值
+            type:'get',   //请求方式
+            beforeSend:function(){
+                //请求前的处理
+            },
+            success:function(req){
+                //请求成功时处理
+                 console.log("请求成功时处理==  " +JSON.stringify(req));
+            },
+            complete:function(req){
+                console.log("请求完成的处理== "+ JSON.stringify(req));
+            },
+            error:function(req){
+                console.log( " 系统异常! 请求出错处理 【 "+ JSON.stringify(req) +" 】");
+            }
+        });
+
+
+    });
+
+</script>
+
+</body>
+
+<div class="registerPage">
+    <div class="registerDiv">
+        <form>
+            <div class="usernameWrapDiv">
+                <div class="usernameLabel">
+                    <label>登录账号:</label>
+                </div>
+                <div class="usernameDiv">
+                    <i class="layui-icon layui-icon-username adminIcon"></i>
+                    <input id="zcloginNo" class="layui-input adminInput" type="text" name="username" placeholder="输入账号" >
+                </div>
+            </div>
+            <div class="usernameWrapDiv">
+                <div class="usernameLabel">
+                    <label>用户名:</label>
+                </div>
+                <div class="usernameDiv">
+                    <i class="layui-icon layui-icon-username adminIcon"></i>
+                    <input id="registerUsername" class="layui-input adminInput" type="text" name="username" placeholder="输入用户名" >
+                </div>
+            </div>
+            <div class="usernameWrapDiv">
+                <div class="usernameLabel">
+                    <label>密码:</label>
+                </div>
+                <div class="passwordDiv">
+                    <i class="layui-icon layui-icon-password adminIcon"></i>
+                    <input id="registerPassword" class="layui-input adminInput" type="password" name="password" placeholder="输入密码">
+                </div>
+            </div>
+            <div class="usernameWrapDiv">
+                <div class="usernameLabel">
+                    <label>确认密码:</label>
+                </div>
+                <div class="passwordDiv">
+                    <i class="layui-icon layui-icon-password adminIcon"></i>
+                    <input id="registerWellPassword" class="layui-input adminInput" type="password" name="password" placeholder="输入密码">
+                </div>
+            </div>
+            <div class="usernameWrapDiv">
+                <div class="usernameLabel">
+                    <label>手机号码:</label>
+                </div>
+                <div class="usernameDiv">
+                    <i class="layui-icon layui-icon-username adminIcon"></i>
+                    <input id="zcPhoneNo" class="layui-input adminInput" type="text" name="username" placeholder="输入手机号码" >
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+</html>
+

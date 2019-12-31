@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.person.mapper.DepartmentMapper">
+
+
+    <select id="query"  resultType="com.example.person.vo.DepartCodeNameVo">
+        SELECT   P.DEPART_CODE,P.DEPART_NAME
+        FROM   P_DEPARTMENT_INFO P
+        ORDER BY DEPART_CODE ASC
+    </select>
+
+
+    <!--按条件查询所有客户信息 -->
+    <select id="queryAll" parameterType="com.example.person.dto.DepartmentInDTO" resultType="com.example.person.vo.DepartmentInfoVo">
+        SELECT * FROM (
+        SELECT @rownum:=@rownum+1 AS RN,P.ID , P.DEPART_CODE,P.DEPART_NAME,P.DEPART_ADDRESS,P.CREATE_TIME
+        FROM  (SELECT @rownum:=0) r, P_DEPARTMENT_INFO P
+        WHERE 1=1
+        <if test="param.departCode !=null and param.departCode !=''">
+            AND  DEPART_CODE LIKE  CONCAT('%',CONCAT(#{param.departCode},'%'))
+        </if>
+        <if test="param.departName !=null and param.departName !=''">
+            AND  DEPART_NAME LIKE  CONCAT('%',CONCAT(#{param.departName},'%'))
+        </if>
+        <if test="param.departAddress !=null and param.departAddress !=''">
+            AND  DEPART_ADDRESS LIKE CONCAT('%',CONCAT(#{param.departAddress},'%'))
+        </if>
+        ORDER BY DEPART_CODE DESC
+        ) B
+        WHERE RN BETWEEN (#{param.pageNo}-1 )* #{param.pageSize} +1 AND #{param.pageNo}* #{param.pageSize}
+    </select>
+
+
+    <!--查询总数据量 -->
+    <select id="queryAllTotal" parameterType="com.example.person.dto.DepartmentInDTO" resultType="java.lang.Integer">
+        SELECT  COUNT(1) CNT
+        FROM    P_DEPARTMENT_INFO
+        WHERE 1=1
+        <if test="param.departCode !=null and param.departCode !=''">
+            AND  DEPART_CODE LIKE  CONCAT('%',CONCAT(#{param.departCode},'%'))
+        </if>
+        <if test="param.departName !=null and param.departName !=''">
+            AND  DEPART_NAME LIKE  CONCAT('%',CONCAT(#{param.departName},'%'))
+        </if>
+        <if test="param.departAddress !=null and param.departAddress !=''">
+            AND  DEPART_ADDRESS LIKE CONCAT('%',CONCAT(#{param.departAddress},'%'))
+        </if>
+
+    </select>
+
+
+
+
+
+    <!--添加addDepart -->
+    <insert id="addDepart" parameterType="com.example.person.dto.DepartAddOrEditInDTO" >
+        INSERT INTO P_DEPARTMENT_INFO(ID,DEPART_CODE,DEPART_NAME,DEPART_ADDRESS,CREATE_TIME)
+        VALUES ( #{param.id},#{param.departCode}, #{param.departName},#{param.departAddress}, SYSDATE() )
+    </insert>
+
+
+
+    <!--修改部门信息 -->
+    <update id="editDepart" parameterType="com.example.person.dto.DepartAddOrEditInDTO" >
+        UPDATE P_DEPARTMENT_INFO SET
+        DEPART_CODE=#{param.departCode},
+        DEPART_NAME=#{param.departName},
+        DEPART_ADDRESS=#{param.departAddress}
+        WHERE ID = #{param.id}
+    </update>
+
+    <!--删除 -->
+    <delete id="delete" parameterType="java.lang.String" >
+        DELETE FROM P_DEPARTMENT_INFO WHERE ID = #{id}
+    </delete>
+
+</mapper>

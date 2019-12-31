@@ -1,0 +1,36 @@
+sp:
+  swagger:
+    enabled: true
+    title: 网关信息
+    description: 网关信息接口文档
+    version: 1.0
+    base-package: com.example.person.controller
+  cache-manager:
+    configs:
+      - key: menu
+        second: 600
+      - key: user
+        second: 1800
+spring:
+  aop:
+    auto: true
+  profiles:
+    active: test
+  main:
+    allow-bean-definition-overriding: true
+feign:
+  sentinel:
+    enabled: true
+  okhttp:
+    enabled: true
+  hystrix:
+    enabled: false
+  httpclient:
+    enabled: true
+    max-connections: 1000
+    max-connections-per-route: 100
+  client:
+    config:
+      default:
+        connectTimeout: 30000
+        readTimeout: 30000

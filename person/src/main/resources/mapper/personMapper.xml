@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.person.mapper.PersonMapper">
+    <!--查询所有客户信息 -->
+    <select id="queryAll" parameterType="com.example.person.dto.PersonInDTO" resultType="com.example.person.vo.PersinInfoVo">
+        SELECT * FROM (
+        SELECT @rownum:=@rownum+1 AS RN, P.P_ID  id,P.NAME,P.SEX,P.CSNY,P.CSDZ,P.XZDZ,P.SHJN,P.XYCS,P.GZSC,P.HYZK,P.SFZHM ,P.SJHM,
+        P.WXHM,P.QQHM,P.JTZK,P.GSZW
+        FROM  (SELECT @rownum:=0) r, P_PERSON_INFO P
+        WHERE 1=1
+        <if test="param.name !=null and param.name !=''">
+            AND  NAME LIKE  CONCAT('%',CONCAT(#{param.name},'%'))
+        </if>
+        <if test="param.xycs !=null and param.xycs !=''">
+            AND  XYCS LIKE  CONCAT('%',CONCAT(#{param.xycs},'%'))
+        </if>
+        <if test="param.sex !=null and param.sex !=''">
+            AND  SEX LIKE CONCAT('%',CONCAT(#{param.sex},'%'))
+        </if>
+        ORDER BY CREAT_TIME DESC
+        ) B
+        WHERE RN BETWEEN (#{param.pageNo}-1 )* #{param.pageSize} +1 AND #{param.pageNo}* #{param.pageSize}
+    </select>
+
+
+    <!--查询总数据量 -->
+    <select id="queryAllTotal" parameterType="com.example.person.dto.PersonInDTO" resultType="java.lang.Integer">
+        SELECT  COUNT(1) CNT
+        FROM    P_PERSON_INFO P
+        WHERE 1=1
+        <if test="param.name !=null and param.name !=''">
+            AND  NAME LIKE  CONCAT('%',CONCAT(#{param.name},'%'))
+        </if>
+        <if test="param.xycs !=null and param.xycs !=''">
+            AND  XYCS LIKE  CONCAT('%',CONCAT(#{param.xycs},'%'))
+        </if>
+        <if test="param.sex !=null and param.sex !=''">
+            AND  SEX LIKE CONCAT('%',CONCAT(#{param.sex},'%'))
+        </if>
+
+    </select>
+
+
+    <!--添加Person -->
+    <insert id="addPerson" parameterType="com.example.person.dto.PersonAddOrEditInDTO" >
+        INSERT INTO P_PERSON_INFO(P_ID ,NAME,SEX,CSNY,CSDZ,XZDZ,SHJN,XYCS,GZSC,HYZK,SFZHM,SJHM,WXHM,QQHM,JTZK,GSZW,CREAT_TIME)
+        VALUES ( #{param.pId},#{param.name},#{param.sex},#{param.csny},#{param.csdz},#{param.xzdz},#{param.shjn},
+                 #{param.xycs},#{param.gzsc},#{param.hyzk},#{param.sfzhm},#{param.sjhm},#{param.wxhm},#{param.qqhm}, #{param.jtzk}, #{param.gszw}, SYSDATE() )
+    </insert>
+
+
+    <!--修改客户信息 -->
+    <update id="editPerson" parameterType="com.example.person.dto.PersonAddOrEditInDTO" >
+        UPDATE P_PERSON_INFO SET
+        NAME =#{param.name},
+        SEX =#{param.sex},
+        CSNY =#{param.csny},
+        CSDZ =#{param.csdz},
+        XZDZ=#{param.xzdz},
+        SHJN=#{param.shjn},
+        XYCS=#{param.xycs},
+        GZSC=#{param.gzsc},
+        HYZK=#{param.hyzk},
+        SFZHM=#{param.sfzhm},
+        SJHM=#{param.sjhm},
+        WXHM=#{param.wxhm},
+        QQHM=#{param.qqhm},
+        JTZK=#{param.jtzk},
+        GSZW=#{param.gszw}
+        WHERE P_ID = #{param.pId}
+    </update>
+
+
+
+
+    <!--删除闲杂人员 -->
+    <delete id="delete" parameterType="java.lang.Long" >
+        DELETE FROM P_PERSON_INFO WHERE P_ID = #{pId}
+    </delete>
+
+</mapper>

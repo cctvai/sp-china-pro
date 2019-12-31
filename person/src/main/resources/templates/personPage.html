@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../static/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="../static/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../static/layui/ajaxUtils.js" charset="utf-8"></script>
+
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+<div>
+
+    <div class="layui-form">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">姓名</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" id="nameId" placeholder="">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">相遇场所</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" id="xycsId" placeholder="">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">性别</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" id="sexId" placeholder="">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <div class="layui-input-inline">
+                    <button type="button" class="layui-btn" onclick="selectBtn()">查询</button>
+                    <button type="button" class="layui-btn layui-btn-normal" onclick="addBtn()">添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div>
+        <table class="layui-hide" id="test" lay-filter="test"></table>
+        <div id="demo0"></div>
+    </div>
+
+
+</div>
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+
+<script>
+
+    //搜索查询
+    function selectBtn() {
+        comSelect(1);
+    }
+
+    //添加新人
+    function addBtn() {
+        addOrEditFun('add', null)
+    }
+
+    //编辑
+    function editBtn(rowData) {
+        addOrEditFun('edit', rowData);
+    }
+
+    var addData = {
+        pId: '',
+        name: '',
+        sex: '',
+        csny: '',
+        csdz: '',
+        xzdz: '',
+        shjn: '',
+        xycs: '',
+        gzsc: '',
+        hyzk: '',
+        sjhm: '',
+        wxhm: '',
+        qqhm: '',
+        jtzk: '',
+        gszw: ''
+
+    }
+    var pageTree = {
+        bool: false,
+        count: 0,
+        limit: 10, // 每页展示的数据量
+        data: []
+    }
+
+    function addOrEditFun(openId, rowData) {
+        layui.use('layer', function () { //独立版的layer无需执行这一句
+            var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
+            layer.open({
+                area: ['1000px', '400px']
+                , type: 1
+                //  ,offset: type //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+                , id: 'addOrEdit' //防止重复弹出
+                , content: ' <div >\n' +
+                    '        <div class="layui-form">\n' +
+                    '            <input type="hidden" id="pId">\n' +
+                    '            <div class="layui-form-item">\n' +
+                    '                <div class="layui-inline">\n' +
+                    '                    <label class="layui-form-label">姓名</label>\n' +
+                    '                    <div class="layui-input-inline">\n' +
+                    '                        <input type="text" class="layui-input" id="name" placeholder="">\n' +
+                    '                    </div>\n' +
+                    '                </div>\n' +
+                    '                <div class="layui-inline">\n' +
+                    '                    <label class="layui-form-label">性别</label>\n' +
+                    '                    <div class="layui-input-inline">\n' +
+                    '                        <input type="text" class="layui-input" id="sex" placeholder="">\n' +
+                    '                    </div>\n' +
+                    '                </div>\n' +
+                    '                <div class="layui-inline">\n' +
+                    '                    <label class="layui-form-label">出生年月</label>\n' +
+                    '                    <div class="layui-input-inline">\n' +
+                    '                        <input type="text" class="layui-input" id="csny" placeholder="">\n' +
+                    '                    </div>\n' +
+                    '                </div> <br>\n' +
+                    '                <div class="layui-inline">\n' +
+                    '                    <label class="layui-form-label">老家地址</label>\n' +
+                    '                    <div class="layui-input-inline">\n' +
+                    '                        <input type="text" class="layui-input" id="csdz" placeholder="">\n' +
+                    '                    </div>\n' +
+                    '                </div>\n' +
+                    '                <div class="layui-inline">\n' +
+                    '                    <label class="layui-form-label">现住地址</label>\n' +
+                    '                    <div class="layui-input-inline">\n' +
+                    '                        <input type="text" class="layui-input" id="xzdz" placeholder="">\n' +
+                    '                    </div>\n' +
+                    '                </div>\n' +
+                    '                <div class="layui-inline">\n' +
+                    '                    <label class="layui-form-label">所会技能</label>\n' +
+                    '                    <div class="layui-input-inline">\n' +
+                    '                        <input type="text" class="layui-input" id="shjn" placeholder="">\n' +
+                    '                    </div>\n' +
+                    '                </div><br>\n' +
+                    '                <div class="layui-inline">\n' +
+                    '                    <label class="layui-form-label">相遇场所</label>\n' +
+                    '                    <div class="layui-input-inline">\n' +
+                    '                        <input type="text" class="layui-input" id="xycs" placeholder="">\n' +
+                    '                    </div>\n' +
+                    '                </div>\n' +
+                    '                <div class="layui-inline">\n' +
+                    '                    <label class="layui-form-label">工作时长</label>\n' +
+                    '                    <div class="layui-input-inline">\n' +
+                    '                        <input type="text" class="layui-input" id="gzsc" placeholder="">\n' +
+                    '                    </div>\n' +
+                    '                </div>\n' +
+                    '                <div class="layui-inline">\n' +
+                    '                    <label class="layui-form-label">婚姻状况</label>\n' +
+                    '                    <div class="layui-input-inline">\n' +
+                    '                        <input type="text" class="layui-input" id="hyzk" placeholder="">\n' +
+                    '                    </div>\n' +
+                    '                </div>\n' +
+                    '                <div class="layui-inline"><br>\n' +
+                    '                    <label class="layui-form-label">身份证号</label>\n' +
+                    '                    <div class="layui-input-inline">\n' +
+                    '                        <input type="text" class="layui-input" id="sfzhm" placeholder="">\n' +
+                    '                    </div>\n' +
+                    '                </div>\n' +
+                    '                <div class="layui-inline"><br>\n' +
+                    '                    <label class="layui-form-label">手机号码</label>\n' +
+                    '                    <div class="layui-input-inline">\n' +
+                    '                        <input type="text" class="layui-input" id="sjhm" placeholder="">\n' +
+                    '                    </div>\n' +
+                    '                </div>\n' +
+                    '                <div class="layui-inline">\n' +
+                    '                    <label class="layui-form-label">微信号码</label>\n' +
+                    '                    <div class="layui-input-inline">\n' +
+                    '                        <input type="text" class="layui-input" id="wxhm" placeholder="">\n' +
+                    '                    </div>\n' +
+                    '                </div>\n' +
+                    '                <div class="layui-inline">\n' +
+                    '                    <label class="layui-form-label">QQ号码</label>\n' +
+                    '                    <div class="layui-input-inline">\n' +
+                    '                        <input type="text" class="layui-input" id="qqhm" placeholder="">\n' +
+                    '                    </div>\n' +
+                    '                </div><br>\n' +
+                    '                <div class="layui-inline">\n' +
+                    '                    <label class="layui-form-label">家庭状况</label>\n' +
+                    '                    <div class="layui-input-inline">\n' +
+                    '                        <input type="text" class="layui-input" id="jtzk" placeholder="">\n' +
+                    '                    </div>\n' +
+                    '                </div>\n' +
+                    '                <div class="layui-inline">\n' +
+                    '                    <label class="layui-form-label">公司职位</label>\n' +
+                    '                    <div class="layui-input-inline">\n' +
+                    '                        <input type="text" class="layui-input" id="gszw" placeholder="">\n' +
+                    '                    </div>\n' +
+                    '                </div>\n' +
+                    '            </div>\n' +
+                    '        </div>\n' +
+                    '    </div>'
+                , btn: ['确定', '取消']
+                , btnAlign: 'c' //按钮居中
+                , shade: 1 //不显示遮罩
+                , yes: function (index, layero) {
+                    // var pId = $("#pId").val();
+                    addDataFun($);
+                    addOrEditQqFun();
+                }
+                , btn2: function (index, layero) {
+                    layer.closeAll();
+                }
+            });
+            //编辑
+            if (openId == 'edit') {
+                editFuzhiFun($, rowData);
+            }
+            //添加
+            if (openId == 'add') {
+                addClerFun($);
+            }
+        });
+    }
+
+    comSelect(1);
+
+    function comSelect(pageNo) {
+        layui.use(['laypage', 'layer', 'table', 'jquery'], function () {
+            var laypage = layui.laypage
+                , layer = layui.layer
+                , $ = layui.jquery;
+            var table = layui.table;
+
+            var inParam = {
+                name: $.trim($("#nameId").val()),
+                xycs: $.trim($("#xycsId").val()),
+                sex: $.trim($("#sexId").val()),
+                pageNo: pageNo,
+                pageSize: pageTree.limit
+            }
+
+            apiPost('qryperson/queryAll', inParam, function (res) {
+                pageTree.data = res.data.list;
+                pageTree.count = res.data.total;
+
+                laypage.render({
+                    elem: 'demo0'
+                    , count: pageTree.count //数据总数
+                    , limit: pageTree.limit //限制数据条数
+                    , theme: '#1E9FFF'
+                    , jump: function (obj) {
+                        inParam.pageNo = obj.curr;
+                        if (pageTree.bool ) {
+                            apiPost('qryperson/queryAll', inParam, function (res) {
+                                pageTree.data = res.data.list;
+                                pageTree.count = res.data.total;
+                                tableReader(table);
+                            });
+                        } else {
+                            tableReader(table);
+                        }
+
+                    }
+                });
+            });
+
+        });
+    }
+
+
+    function tableReader(table) {
+        pageTree.bool = true;
+        table.render({
+            elem: '#test'
+            ,id:'id'
+            // ,url:'/demo/table/user/'
+            , data: pageTree.data
+            , limit: pageTree.limit //限制数据条数
+            , cols: [[
+                {field: 'rn', title: '序号'}
+                , {field: 'name', title: '姓名'}
+                , {field: 'sex', title: '性别'}
+                , {field: 'csny', title: '出生年月'}
+                , {field: 'csdz', title: '出生地址'}
+                , {field: 'xzdz', title: '现住地址'}
+                , {field: 'shjn', title: '所会技能'}
+                , {field: 'xycs', title: '相遇场所'}
+                , {field: 'gzsc', title: '工作时长'}
+                , {field: 'hyzk', title: '婚姻状况'}
+                , {field: 'sfzhm', title: '身份证号'}
+                , {field: 'sjhm', title: '手机号码'}
+                , {field: 'wxhm', title: '微信号码'}
+                , {field: 'qqhm',fixed: 'right', title: 'QQ号码'}
+                , {field: 'jtzk',fixed: 'right', title: '家庭状况'}
+                , {field: 'gszw',fixed: 'right', title: '公司职位'}
+                , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 120}
+            ]]
+        });
+        table.on('tool(test)', function (obj) {
+          // alert( " objobjobj === "+ JSON.stringify( obj));
+            var layEvent = obj.event;
+            if (layEvent == 'edit') {
+                editBtn(obj.data);
+            }
+            if (layEvent == 'del') {
+                del(obj.data.id);
+            }
+        });
+    }
+
+
+    //添加或者编辑调用服务方法
+    function addOrEditQqFun() {
+        apiPost('qryperson/addOrEdit', addData, function (res) {
+            alert(11111111);
+        });
+        layer.confirm('操作成功!', {
+                btn: ['确定'] //可以无限个按钮
+            }, function (index, layero) {
+                layer.closeAll();
+                comSelect(1);
+            }
+        );
+
+
+    }
+
+    //删除
+    function del(id) {
+        layer.confirm('确定删除么？', {
+                btn: ['确定'] //可以无限个按钮
+            }, function (index, layero) {
+                apiGet('qryperson/delete?pId=' + id, {}, function (res) {
+                });
+                layer.closeAll();
+                comSelect(1);
+            }
+        );
+
+    }
+
+
+    //赋值方法
+    function addDataFun($) {
+        addData.pId = $("#pId").val();
+        addData.name = $("#name").val();
+        addData.sex = $("#sex").val();
+        addData.csny = $("#csny").val();
+        addData.csdz = $("#csdz").val();
+        addData.xzdz = $("#xzdz").val();
+        addData.shjn = $("#shjn").val();
+        addData.xycs = $("#xycs").val();
+        addData.gzsc = $("#gzsc").val();
+        addData.hyzk = $("#hyzk").val();
+        addData.sfzhm = $("#sfzhm").val();
+        addData.sjhm = $("#sjhm").val();
+        addData.wxhm = $("#wxhm").val();
+        addData.qqhm = $("#qqhm").val();
+        addData.jtzk = $("#jtzk").val();
+        addData.gszw = $("#gszw").val();
+    }
+
+    //往页面上赋值
+    function editFuzhiFun($, rowData) {
+        $("#pId").val(rowData.id);
+        $("#name").val(rowData.name);
+        $("#sex").val(rowData.sex);
+        $("#csny").val(rowData.csny);
+        $("#csdz").val(rowData.csdz);
+        $("#xzdz").val(rowData.xzdz);
+        $("#shjn").val(rowData.shjn);
+        $("#xycs").val(rowData.xycs);
+        $("#gzsc").val(rowData.gzsc);
+        $("#hyzk").val(rowData.hyzk);
+        $("#sfzhm").val(rowData.sfzhm);
+        $("#sjhm").val(rowData.sjhm);
+        $("#wxhm").val(rowData.wxhm);
+        $("#qqhm").val(rowData.qqhm);
+        $("#jtzk").val(rowData.jtzk);
+        $("#gszw").val(rowData.gszw);
+    }
+
+    //清空页面数据
+    function addClerFun($) {
+        $("#pId").val('');
+        $("#name").val('');
+        $("#sex").val('');
+        $("#csny").val('');
+        $("#csdz").val('');
+        $("#xzdz").val('');
+        $("#shjn").val('');
+        $("#xycs").val('');
+        $("#gzsc").val('');
+        $("#hyzk").val('');
+        $("#sfzhm").val('');
+        $("#sjhm").val('');
+        $("#wxhm").val('');
+        $("#qqhm").val('');
+        $("#jtzk").val('');
+        $("#gszw").val('');
+    }
+
+
+</script>
+
+</body>
+</html>

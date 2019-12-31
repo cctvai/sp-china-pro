@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.person.mapper.JobLogInfoMapper">
+
+    <!--按条件查询所有客户信息 -->
+    <select id="queryAll" parameterType="com.example.person.dto.JobLogInDTO" resultType="com.example.person.vo.JobLogInfoVo">
+        SELECT * FROM (
+        SELECT @rownum:=@rownum+1 AS RN,P.ID ,P.LOG_TYPE, P.LOG_NR,P.IS_ABLE
+        , P.CREATE_TIME
+        FROM  (SELECT @rownum:=0) r, P_JOB_LOG P
+        WHERE 1=1
+        <if test="param.logType !=null and param.logType !=''">
+            AND  LOG_TYPE LIKE  CONCAT('%',CONCAT(#{param.logType},'%'))
+        </if>
+        <if test="param.logNr !=null and param.logNr !=''">
+            AND  LOG_NR LIKE  CONCAT('%',CONCAT(#{param.logNr},'%'))
+        </if>
+        <if test="param.isAble !=null and param.isAble !=''">
+            AND  IS_ABLE LIKE CONCAT('%',CONCAT(#{param.isAble},'%'))
+        </if>
+        ORDER BY CREATE_TIME  DESC
+        ) B
+        WHERE RN BETWEEN (#{param.pageNo}-1 )* #{param.pageSize} +1 AND #{param.pageNo}* #{param.pageSize}
+    </select>
+
+
+    <!--查询总数据量 -->
+    <select id="queryAllTotal" parameterType="com.example.person.dto.JobLogInDTO" resultType="java.lang.Integer">
+        SELECT  COUNT(1) CNT
+        FROM   P_JOB_LOG
+        WHERE 1=1
+        <if test="param.logType !=null and param.logType !=''">
+            AND  LOG_TYPE LIKE  CONCAT('%',CONCAT(#{param.logType},'%'))
+        </if>
+        <if test="param.logNr !=null and param.logNr !=''">
+            AND  LOG_NR LIKE  CONCAT('%',CONCAT(#{param.logNr},'%'))
+        </if>
+        <if test="param.isAble !=null and param.isAble !=''">
+            AND  IS_ABLE LIKE CONCAT('%',CONCAT(#{param.isAble},'%'))
+        </if>
+    </select>
+
+
+    <!--添加addJobLog-->
+    <insert id="addJobLog" parameterType="com.example.person.dto.JobLogAddOrEditInDTO" >
+        INSERT INTO P_JOB_LOG(ID ,LOG_TYPE, LOG_NR,IS_ABLE,CREATE_TIME)
+        VALUES ( #{param.id},#{param.logType}, #{param.logNr},#{param.isAble}, SYSDATE() )
+    </insert>
+
+    <!--修改editResource -->
+    <update id="editJobLog" parameterType="com.example.person.dto.JobLogAddOrEditInDTO" >
+        UPDATE P_JOB_LOG SET
+        LOG_TYPE=#{param.logType},
+        LOG_NR=#{param.logNr},
+        IS_ABLE=#{param.isAble}
+        WHERE ID = #{param.id}
+    </update>
+
+    <!--删除 -->
+    <delete id="delete" parameterType="java.lang.String" >
+        DELETE FROM P_JOB_LOG WHERE ID = #{id}
+    </delete>
+
+</mapper>

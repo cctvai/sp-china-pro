@@ -1,0 +1,49 @@
+
+## eureka.client.serviceUrl.defaultZone=http://localhost:8761/eureka/
+
+
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*Mapper.xml
+  #实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: com.example.person.dto
+  global-config:
+    db-config:
+      id-type: auto
+
+sp:
+  swagger:
+    enabled: true
+    title: 人员信息
+    description: 人员信息接口文档
+    version: 1.0
+    base-package: com.example.person.controller
+  cache-manager:
+    configs:
+      - key: menu
+        second: 600
+      - key: user
+        second: 1800
+spring:
+  aop:
+    auto: true
+  profiles:
+    active: test
+  main:
+    allow-bean-definition-overriding: true
+feign:
+  sentinel:
+    enabled: true
+  okhttp:
+    enabled: true
+  hystrix:
+    enabled: false
+  httpclient:
+    enabled: true
+    max-connections: 1000
+    max-connections-per-route: 100
+  client:
+    config:
+      default:
+        connectTimeout: 30000
+        readTimeout: 30000
+

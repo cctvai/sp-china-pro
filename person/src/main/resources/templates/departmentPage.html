@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../static/layui/css/layui.css" media="all">
+    <script type="text/javascript" src="../static/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../static/layui/ajaxUtils.js" charset="utf-8"></script>
+
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+<div>
+
+    <div class="layui-form">
+        <div class="layui-form-item">
+            <input type="hidden" id="pId">
+            <div class="layui-inline">
+                <label class="layui-form-label">部门编号</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" id="departCodeId" placeholder="">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">部门名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" id="departNameId" placeholder="">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">部门所在地</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" id="departAddressId" placeholder="">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <div class="layui-input-inline" style="width: 250px;">
+                    <button type="button" class="layui-btn layui-btn-primary" onclick="selectBtn()">查询</button>
+                    <button type="button" class="layui-btn layui-btn-normal" onclick="addBtn()">添加</button>
+                    <button type="button" class="layui-btn layui-btn-warm" onclick="clearBtn()">重置</button>
+                 </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div>
+        <table class="layui-hide" id="test" lay-filter="test"></table>
+        <div id="demo0"></div>
+    </div>
+
+
+</div>
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+
+<script>
+
+    //搜索查询
+    function selectBtn() {
+        comSelect(1);
+    }
+
+    //添加新人
+    function addBtn() {
+        addOrEditFun();
+    }
+
+    //编辑
+    function editBtn( $, rowData) {
+        $("#pId").val(rowData.id);
+        $("#departCodeId").val(rowData.departCode);
+        $("#departNameId").val(rowData.departName);
+        $("#departAddressId").val(rowData.departAddress);
+    }
+
+    var addData = {
+        id: '',
+        departCode: '',
+        departName: '',
+        departAddress:''
+    }
+    var pageTree = {
+        bool: false,
+        count: 0,
+        limit: 10, // 每页展示的数据量
+        data: []
+    }
+
+
+    comSelect(1);
+
+    function comSelect(pageNo) {
+        layui.use(['laypage','table','jquery'], function () {
+            var laypage = layui.laypage
+                ,table= layui.table
+                , $ = layui.jquery;
+            var inParam = {
+                departCode: $.trim($("#departCodeId").val()),
+                departName: $.trim($("#departNameId").val()),
+                departAddress: $.trim($("#departAddressId").val()),
+                pageNo: pageNo,
+                pageSize: pageTree.limit
+            }
+
+            apiPost('depart/queryAll', inParam, function (res) {
+                pageTree.data = res.data.list;
+                pageTree.count = res.data.total;
+
+                laypage.render({
+                    elem: 'demo0'
+                    , count: pageTree.count //数据总数
+                    , limit: pageTree.limit //限制数据条数
+                    , theme: '#1E9FFF'
+                    , jump: function (obj) {
+                        inParam.pageNo = obj.curr;
+                        if (pageTree.bool ) {
+                            apiPost('depart/queryAll', inParam, function (res) {
+                                pageTree.data = res.data.list;
+                                pageTree.count = res.data.total;
+                                tableReader( $,table);
+                            });
+                        } else {
+                            tableReader($,table);
+                        }
+
+                    }
+                });
+            });
+
+        });
+    }
+
+
+    function tableReader($,table) {
+        pageTree.bool = true;
+        table.render({
+            elem: '#test'
+            ,id:'id'
+            // ,url:'/demo/table/user/'
+            , data: pageTree.data
+            , limit: pageTree.limit //限制数据条数
+            , cols: [[
+                  {field: 'rn', title: '序号'}
+                , {field: 'departCode', title: '部门编号'}
+                , {field: 'departName', title: '部门名称'}
+                , {field: 'departAddress', title: '部门所在地'}
+                , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 120}
+            ]]
+        });
+        table.on('tool(test)', function (obj) {
+          // alert( " objobjobj === "+ JSON.stringify( obj));
+            var layEvent = obj.event;
+            if (layEvent == 'edit') {
+                editBtn( $,obj.data);
+            }
+            if (layEvent == 'del') {
+                del(obj.data.id);
+            }
+        });
+    }
+
+
+    //添加或者编辑调用服务方法
+    function addOrEditFun() {
+        layui.use(['layer','jquery'], function () {
+            var layer = layui.layer
+                , $ = layui.jquery;
+        addData.id =$("#pId").val();
+        addData.departCode =$("#departCodeId").val();
+        addData.departName =$("#departNameId").val();
+        addData.departAddress =$("#departAddressId").val();
+
+        if( $.trim(addData.departCode)==''){
+                alert("部门编号不能为空!")
+                return;
+        }else if( $.trim(addData.departName)==''){
+                alert("部门名称不能为空!")
+                return;
+        }else if( $.trim(addData.departAddress)==''){
+                alert("部门所在地不能为空!")
+                return;
+         }
+
+         var adEdStr = '';
+         if( $.trim(addData.id)==''){
+             adEdStr = '确定添加么？';
+         }else{
+             adEdStr = '确定修改么？';
+         }
+
+        layer.confirm(adEdStr, {
+                    btn: ['确定']
+                }, function (index, layero) {
+                    var bool = true;
+                    apiPost('depart/addOrEdit', addData, function (res) {
+                           alert(11111111);
+                    });
+                    layer.closeAll();
+                    clearBtn();
+                    comSelect(1);
+                }
+        );
+
+        });
+    }
+
+    //删除
+    function del(id) {
+        layer.confirm('确定删除么？', {
+                btn: ['确定'] //可以无限个按钮
+            }, function (index, layero) {
+                apiGet('depart/delete?id=' + id, {}, function (res) {
+                });
+                layer.closeAll();
+                comSelect(1);
+            }
+        );
+
+    }
+
+
+    //清空页面数据
+    function clearBtn() {
+        layui.use(['jquery'], function () {
+            var   $ = layui.jquery;
+              $("#pId").val('');
+              $("#departCodeId").val('');
+              $("#departNameId").val('');
+              $("#departAddressId").val('');
+        });
+    }
+
+
+</script>
+
+</body>
+</html>
