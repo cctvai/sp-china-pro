@@ -36,6 +36,12 @@
                 </div>
             </div>
             <div class="layui-inline">
+                <label class="layui-form-label">爱好</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" id="loveId" placeholder="">
+                </div>
+            </div>
+            <div class="layui-inline">
                 <div class="layui-input-inline">
                     <button type="button" class="layui-btn" onclick="selectBtn()">查询</button>
                     <button type="button" class="layui-btn layui-btn-normal" onclick="addBtn()">添加</button>
@@ -49,6 +55,7 @@
         <table class="layui-hide" id="test" lay-filter="test"></table>
         <div id="demo0"></div>
     </div>
+
 
 
 </div>
@@ -91,7 +98,8 @@
         wxhm: '',
         qqhm: '',
         jtzk: '',
-        gszw: ''
+        gszw: '',
+        love:''
 
     }
     var pageTree = {
@@ -109,7 +117,7 @@
                 , type: 1
                 //  ,offset: type //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
                 , id: 'addOrEdit' //防止重复弹出
-                , content: ' <div >\n' +
+                , content: '  <div >\n' +
                     '        <div class="layui-form">\n' +
                     '            <input type="hidden" id="pId">\n' +
                     '            <div class="layui-form-item">\n' +
@@ -130,7 +138,7 @@
                     '                    <div class="layui-input-inline">\n' +
                     '                        <input type="text" class="layui-input" id="csny" placeholder="">\n' +
                     '                    </div>\n' +
-                    '                </div> <br>\n' +
+                    '                </div>  <br>\n' +
                     '                <div class="layui-inline">\n' +
                     '                    <label class="layui-form-label">老家地址</label>\n' +
                     '                    <div class="layui-input-inline">\n' +
@@ -148,7 +156,13 @@
                     '                    <div class="layui-input-inline">\n' +
                     '                        <input type="text" class="layui-input" id="shjn" placeholder="">\n' +
                     '                    </div>\n' +
-                    '                </div><br>\n' +
+                    '                </div> <br>\n' +
+                    '                <div class="layui-inline">\n' +
+                    '                    <label class="layui-form-label">爱好</label>\n' +
+                    '                    <div class="layui-input-inline">\n' +
+                    '                        <input type="text" class="layui-input" id="love" placeholder="">\n' +
+                    '                    </div>\n' +
+                    '                </div>\n' +
                     '                <div class="layui-inline">\n' +
                     '                    <label class="layui-form-label">相遇场所</label>\n' +
                     '                    <div class="layui-input-inline">\n' +
@@ -160,25 +174,25 @@
                     '                    <div class="layui-input-inline">\n' +
                     '                        <input type="text" class="layui-input" id="gzsc" placeholder="">\n' +
                     '                    </div>\n' +
-                    '                </div>\n' +
+                    '                </div> <br>\n' +
                     '                <div class="layui-inline">\n' +
                     '                    <label class="layui-form-label">婚姻状况</label>\n' +
                     '                    <div class="layui-input-inline">\n' +
                     '                        <input type="text" class="layui-input" id="hyzk" placeholder="">\n' +
                     '                    </div>\n' +
                     '                </div>\n' +
-                    '                <div class="layui-inline"><br>\n' +
+                    '                <div class="layui-inline">\n' +
                     '                    <label class="layui-form-label">身份证号</label>\n' +
                     '                    <div class="layui-input-inline">\n' +
                     '                        <input type="text" class="layui-input" id="sfzhm" placeholder="">\n' +
                     '                    </div>\n' +
                     '                </div>\n' +
-                    '                <div class="layui-inline"><br>\n' +
+                    '                <div class="layui-inline">\n' +
                     '                    <label class="layui-form-label">手机号码</label>\n' +
                     '                    <div class="layui-input-inline">\n' +
                     '                        <input type="text" class="layui-input" id="sjhm" placeholder="">\n' +
                     '                    </div>\n' +
-                    '                </div>\n' +
+                    '                </div> <br>\n' +
                     '                <div class="layui-inline">\n' +
                     '                    <label class="layui-form-label">微信号码</label>\n' +
                     '                    <div class="layui-input-inline">\n' +
@@ -190,13 +204,13 @@
                     '                    <div class="layui-input-inline">\n' +
                     '                        <input type="text" class="layui-input" id="qqhm" placeholder="">\n' +
                     '                    </div>\n' +
-                    '                </div><br>\n' +
+                    '                </div>\n' +
                     '                <div class="layui-inline">\n' +
                     '                    <label class="layui-form-label">家庭状况</label>\n' +
                     '                    <div class="layui-input-inline">\n' +
                     '                        <input type="text" class="layui-input" id="jtzk" placeholder="">\n' +
                     '                    </div>\n' +
-                    '                </div>\n' +
+                    '                </div> <br>\n' +
                     '                <div class="layui-inline">\n' +
                     '                    <label class="layui-form-label">公司职位</label>\n' +
                     '                    <div class="layui-input-inline">\n' +
@@ -242,6 +256,7 @@
                 name: $.trim($("#nameId").val()),
                 xycs: $.trim($("#xycsId").val()),
                 sex: $.trim($("#sexId").val()),
+                love: $.trim($("#loveId").val()),
                 pageNo: pageNo,
                 pageSize: pageTree.limit
             }
@@ -291,6 +306,7 @@
                 , {field: 'csdz', title: '出生地址'}
                 , {field: 'xzdz', title: '现住地址'}
                 , {field: 'shjn', title: '所会技能'}
+                , {field: 'love', title: '爱好'},
                 , {field: 'xycs', title: '相遇场所'}
                 , {field: 'gzsc', title: '工作时长'}
                 , {field: 'hyzk', title: '婚姻状况'}
@@ -365,6 +381,7 @@
         addData.qqhm = $("#qqhm").val();
         addData.jtzk = $("#jtzk").val();
         addData.gszw = $("#gszw").val();
+        addData.love = $("#love").val();
     }
 
     //往页面上赋值
@@ -385,6 +402,7 @@
         $("#qqhm").val(rowData.qqhm);
         $("#jtzk").val(rowData.jtzk);
         $("#gszw").val(rowData.gszw);
+        $("#love").val(rowData.love);
     }
 
     //清空页面数据
@@ -405,6 +423,7 @@
         $("#qqhm").val('');
         $("#jtzk").val('');
         $("#gszw").val('');
+        $("#love").val('');
     }
 
 

@@ -37,7 +37,8 @@ public class PersonAddOrEditInDTO {
     private String jtzk;
     //公司职位
     private String gszw;
-
+    //爱好
+    private String love;
 
 
 }

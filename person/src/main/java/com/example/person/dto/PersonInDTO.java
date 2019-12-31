@@ -11,7 +11,8 @@ public class PersonInDTO {
     private String xycs;
     //性别
     private String sex;
-
+    //爱好
+    private String love;
     //第几页
     private Integer pageNo;
     //每页多少条数据

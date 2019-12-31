@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.person.mapper.SkillInfoMapper">
+
+    <!--按条件查询所有客户信息 -->
+    <select id="queryAll" parameterType="com.example.person.dto.SkillInfoInDTO" resultType="com.example.person.vo.SkillInfoVo">
+        SELECT * FROM (
+        SELECT @rownum:=@rownum+1 AS RN,P.ID ,P.SKILL_STYLE skillStype,P.SKILL_NAME,P.SKILL_CONTENT, P.CREATE_TIME
+        FROM  (SELECT @rownum:=0) r, P_SKILL_INFO P
+        WHERE 1=1
+        <if test="param.skillStype !=null and param.skillStype !=''">
+            AND  SKILL_STYLE LIKE  CONCAT('%',CONCAT(#{param.skillStype},'%'))
+        </if>
+        <if test="param.skillName !=null and param.skillName !=''">
+            AND  SKILL_NAME LIKE  CONCAT('%',CONCAT(#{param.skillName},'%'))
+        </if>
+        <if test="param.skillContent !=null and param.skillContent !=''">
+            AND  SKILL_CONTENT LIKE CONCAT('%',CONCAT(#{param.skillContent},'%'))
+        </if>
+
+        ORDER BY CREATE_TIME DESC
+        ) B
+        WHERE RN BETWEEN (#{param.pageNo}-1 )* #{param.pageSize} +1 AND #{param.pageNo}* #{param.pageSize}
+    </select>
+
+
+    <!--查询总数据量 -->
+    <select id="queryAllTotal" parameterType="com.example.person.dto.SkillInfoInDTO" resultType="java.lang.Integer">
+        SELECT  COUNT(1) CNT
+        FROM    P_SKILL_INFO
+        WHERE 1=1
+        <if test="param.skillStype !=null and param.skillStype !=''">
+            AND  SKILL_STYLE LIKE  CONCAT('%',CONCAT(#{param.skillStype},'%'))
+        </if>
+        <if test="param.skillName !=null and param.skillName !=''">
+            AND  SKILL_NAME LIKE  CONCAT('%',CONCAT(#{param.skillName},'%'))
+        </if>
+        <if test="param.skillContent !=null and param.skillContent !=''">
+            AND  SKILL_CONTENT LIKE CONCAT('%',CONCAT(#{param.skillContent},'%'))
+        </if>
+
+    </select>
+
+    <!--添加addSkill-->
+    <insert id="addSkill" parameterType="com.example.person.dto.SkillInfoAddOrEditInDTO" >
+        INSERT INTO P_SKILL_INFO(ID ,SKILL_STYLE,SKILL_NAME,SKILL_CONTENT,CREATE_TIME)
+        VALUES ( #{param.id},#{param.skillStype}, #{param.skillName},#{param.skillContent},SYSDATE() )
+    </insert>
+
+
+
+    <!--修改editSkill -->
+    <update id="editSkill" parameterType="com.example.person.dto.SkillInfoAddOrEditInDTO" >
+        UPDATE P_SKILL_INFO SET
+        SKILL_STYLE=#{param.skillStype},
+        SKILL_NAME=#{param.skillName},
+        SKILL_CONTENT=#{param.skillContent}
+        WHERE ID = #{param.id}
+    </update>
+
+    <!--删除 -->
+    <delete id="delete" parameterType="java.lang.String" >
+        DELETE FROM P_SKILL_INFO WHERE ID = #{id}
+    </delete>
+
+</mapper>
