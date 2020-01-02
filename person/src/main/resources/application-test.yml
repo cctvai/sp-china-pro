@@ -9,9 +9,13 @@ spring:
     url: jdbc:mysql://localhost:3306/person_info?useUnicode=true&characterEncoding=utf8&useSSL=false
     data-username: root
     data-password: 123456
+
 mybatis_config_file: mybatis-config.xml
 mapper_path: /mapper/**.xml
 entity_package: com.example.person.entity
+
+#文件上传保存路径
+file_savePath: C:/upload/
 
 ### 开启驼峰命名法
 mybatis:
