@@ -1,19 +1,22 @@
 package com.example.person.mapper;
 
+import com.example.person.dto.ComFileInDTO;
+import com.example.person.dto.ComFileOutDTO;
 import com.example.person.entity.ComFile;
 import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface ComFileMapper {
-    int deleteByPrimaryKey(String id);
+    int deleteByPrimaryKey(@Param("id")String id);
 
-    int insert(ComFile record);
+    int insert(@Param("param")ComFile record);
 
     ComFile selectByPrimaryKey(String id);
 
     int updateByPrimaryKey(ComFile record);
 
-    List<ComFile> selectByCondition(ComFile comFile);
+    List<ComFileOutDTO> selectByCondition(@Param("param")ComFileInDTO inDTO);
+    int selectByConditionTotal(@Param("param")ComFileInDTO inDTO);
 
     int deleteByTypeAndParentId(@Param("type") Integer type, @Param("parentId") String parentId);
 

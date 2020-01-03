@@ -44,9 +44,9 @@ public class SessionFactoryConfigation {
     public MultipartConfigElement multipartConfigElement() {
         MultipartConfigFactory factory = new MultipartConfigFactory();
         //单个文件最大
-        factory.setMaxFileSize("80MB"); //KB,MB
+        factory.setMaxFileSize("1000MB"); //KB,MB
         /// 设置总上传数据总大小
-        int size = 1024;
+        int size = 1024*1024;
         factory.setMaxRequestSize(size+"MB");
         return factory.createMultipartConfig();
     }

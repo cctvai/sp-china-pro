@@ -1,5 +1,7 @@
 package com.example.person.service;
 
+import com.example.person.dto.ComFileInDTO;
+import com.example.person.dto.ComFileOutDTO;
 import com.example.person.entity.ComFile;
 import java.util.List;
 
@@ -9,7 +11,9 @@ import java.util.List;
 */
 public interface ComFileService {
 
-    List<ComFile> selectByCondition(ComFile comFile) throws Exception;
+    List<ComFileOutDTO> selectByCondition(ComFileInDTO inDTO) throws Exception;
+
+    int selectByConditionTotal(ComFileInDTO inDTO) throws Exception;
 
     ComFile save(ComFile comFile) throws Exception;
 

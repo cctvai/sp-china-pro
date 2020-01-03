@@ -1,10 +1,11 @@
-package com.example.person.entity;
+package com.example.person.dto;
 
 import lombok.Data;
 
-import java.util.Date;
 @Data
-public class ComFile {
+public class ComFileOutDTO {
+    //序号
+    private String rn;
     //id
     private String id;
     //父id
@@ -19,5 +20,7 @@ public class ComFile {
     private String path;
     //录入日期
     private String lrrq;
+
+
 
 }

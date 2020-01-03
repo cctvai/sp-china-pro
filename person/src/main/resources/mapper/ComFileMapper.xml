@@ -6,6 +6,7 @@
         <result column="PARENT_ID" jdbcType="VARCHAR" property="parentId" />
         <result column="TYPE" jdbcType="DECIMAL" property="type" />
         <result column="NAME" jdbcType="VARCHAR" property="name" />
+        <result column="SIZE" jdbcType="VARCHAR" property="size" />
         <result column="PATH" jdbcType="VARCHAR" property="path" />
         <result column="LRRQ" jdbcType="TIMESTAMP" property="lrrq" />
     </resultMap>
@@ -22,17 +23,13 @@
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-        delete from  COM_FILE
-        where ID = #{id}
+        DELETE FROM  COM_FILE WHERE ID = #{id}
     </delete>
 
     <insert id="insert" parameterType="com.example.person.entity.ComFile">
-         insert into  COM_FILE (ID, PARENT_ID, TYPE,
-        NAME, PATH, LRRQ
-        )
-        values (#{id}, #{parentId}, #{type,jdbcType=DECIMAL},
-        #{name}, #{path}, new date()
-        )
+        insert into  COM_FILE (ID, PARENT_ID, TYPE,  NAME, SIZE,PATH, LRRQ )
+        values (#{param.id}, #{param.parentId}, #{param.type},
+        #{param.name},#{param.size}, #{param.path}, SYSDATE())
     </insert>
 
     <update id="updateByPrimaryKey" parameterType="com.example.person.entity.ComFile">
@@ -45,12 +42,27 @@
         where ID = #{id}
     </update>
 
-    <select id="selectByCondition" parameterType="com.example.person.entity.ComFile" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List" />
-        from  COM_FILE
+    <!--查询每个用户名下的文件 -->
+    <select id="selectByCondition" parameterType="com.example.person.dto.ComFileInDTO" resultType="com.example.person.dto.ComFileOutDTO">
+        SELECT * FROM (
+        select @rownum:=@rownum+1 AS RN,
+        ID, PARENT_ID, TYPE, NAME,SIZE ,PATH, LRRQ
+        from (SELECT @rownum:=0) r, COM_FILE WHERE 1=1
+        <if test="param.parentId !=null and param.parentId !=''">
+            AND PARENT_ID = #{param.parentId}
+        </if>
+        ) B
+        WHERE RN BETWEEN (#{param.pageNo}-1 )* #{param.pageSize} +1 AND #{param.pageNo}* #{param.pageSize}
+     </select>
+    <!--总数  -->
+    <select id="selectByConditionTotal" parameterType="com.example.person.dto.ComFileInDTO" resultType="java.lang.Integer">
+       select COUNT(1)
+        from  COM_FILE WHERE 1=1
+        <if test="param.parentId !=null and param.parentId !=''">
+            AND PARENT_ID = #{param.parentId}
+        </if>
+     </select>
 
-    </select>
 
     <delete id="deleteByTypeAndParentId" parameterType="map">
         delete from  COM_FILE

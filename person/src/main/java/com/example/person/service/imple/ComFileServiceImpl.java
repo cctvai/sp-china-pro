@@ -1,10 +1,13 @@
 package com.example.person.service.imple;
 
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.example.person.dto.ComFileInDTO;
+import com.example.person.dto.ComFileOutDTO;
 import com.example.person.entity.ComFile;
 import com.example.person.mapper.ComFileMapper;
 import com.example.person.service.ComFileService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
@@ -13,19 +16,28 @@ import java.util.List;
  * ComFileServiceImpl
  * Created by yec on 2019/7/29.
  */
+@Slf4j
 @Service
 public class ComFileServiceImpl implements ComFileService {
 	@Resource
 	private ComFileMapper comFileMapper;
 
 	@Override
-	public List<ComFile> selectByCondition(ComFile comFile) throws Exception {
-		return comFileMapper.selectByCondition(comFile);
+	public List<ComFileOutDTO> selectByCondition(ComFileInDTO inDTO) throws Exception {
+		return comFileMapper.selectByCondition(inDTO);
+	}
+
+	@Override
+	public int selectByConditionTotal(ComFileInDTO inDTO) throws Exception {
+		return comFileMapper.selectByConditionTotal(inDTO);
 	}
 
 	@Override
 	public ComFile save(ComFile comFile) throws Exception {
+		comFile.setId(IdWorker.getId()+"");
+        log.info( "savesavesave=111= "+  comFile );
 		comFileMapper.insert(comFile);
+		log.info( "savesavesave=222= "+  comFile );
 		return comFile;
 	}
 
@@ -58,8 +70,6 @@ public class ComFileServiceImpl implements ComFileService {
 		for (ComFile file : files) {
 			file.setType(Long.valueOf(type));
 			file.setParentId(parentId);
-			file.setLrrq(date);
-
 			save(file);
 		}
 	}

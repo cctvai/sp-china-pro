@@ -1,5 +1,8 @@
 package com.example.person.controller;
 
+import com.example.person.dto.ComFileDelInDTO;
+import com.example.person.dto.ComFileInDTO;
+import com.example.person.dto.ComFileOutDTO;
 import com.example.person.entity.ComFile;
 import com.example.person.entity.ComFileParam;
 import com.example.person.entity.Response;
@@ -19,7 +22,6 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
 * ComFileController
@@ -36,7 +38,7 @@ public class ComFileController {
     @Value("${file_savePath}")
     private String savePath;
 
-
+    //单个上传文件
     @PostMapping("/upload")
     public Response upload( MultipartHttpServletRequest request) throws IOException {
            return new Response().success(FileUtil.upload( savePath,request));
@@ -51,21 +53,17 @@ public class ComFileController {
 
 
     @RequestMapping("/list")
-    public Response getList(int pageNum, int pageSize, ComFile comFile) throws Exception {
-
-        List<ComFile> comFiles = comFileService.selectByCondition(comFile);
-        long total = 100;  //((Page<ComFile>) comFiles).getTotal();
+    public Response getList(ComFileInDTO inDTO) throws Exception {
+        List<ComFileOutDTO> comFiles = comFileService.selectByCondition(inDTO);
         Map<String, Object> data = new HashMap<>();
-        data.put("total", total);
-        data.put("list", comFiles);
-
+        data.put("total",comFileService.selectByConditionTotal(inDTO));
+        data.put("list",comFiles);
         return new Response().success(data);
     }
 
     @RequestMapping("/add")
     public Response add(ComFile comFile) throws Exception {
-        comFileService.save(comFile);
-        return new Response().success(comFile);
+         return new Response().success(comFileService.save(comFile));
     }
 
     @RequestMapping("/update")
@@ -75,9 +73,17 @@ public class ComFileController {
     }
 
     @RequestMapping("/delete")
-    public Response delete(ComFile comFile) throws Exception {
-        comFileService.deleteByPrimaryKey(comFile.getId());
-        return new Response().success(comFile);
+    public Response delete(ComFileDelInDTO inDTO)  {
+        log.info( "delete == "+ inDTO  );
+        try{
+            comFileService.deleteByPrimaryKey(inDTO.getId());
+            FileUtil.deleteFolder( inDTO.getPath());
+            return new Response().success(inDTO);
+        }catch (Exception e){
+            return new Response().failure();
+        }
+
+
     }
 
     @RequestMapping("/selectById")

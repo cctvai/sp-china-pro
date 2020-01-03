@@ -1,9 +1,7 @@
 package com.example.person.utils;
 
-import com.example.person.entity.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -40,6 +38,7 @@ public class FileUtil {
         Map<String,Object> out = new HashMap<>();
         out.put("oldFileNameSuffix",originalFileName );
         out.put("newFilePath",savePath + fileName );
+        out.put("fileSize",file.getSize()/1024 );//kb
         log.info( "uploaduploadupload=== "+ out);
         return out;
     }
@@ -143,4 +142,71 @@ public class FileUtil {
         }
         return success;
     }
+
+
+    /**
+     * 根据路径删除指定目录和文件
+     * @param sPath ：路径
+     * @return ：删除成功返回true,否则返回false
+     */
+    public static boolean deleteFolder(String sPath){
+        File file = new File(sPath);
+        if(!file.exists()){
+            return false;
+        }else {
+            if(file.isFile()){
+                return deleteFile(sPath);
+            }else {
+                return deleteDirectory(sPath);
+            }
+        }
+    }
+
+    /**
+     * 删除单个文件
+     * @param sPath：文件路径
+     * @return ：是否删除成功
+     */
+    private static boolean deleteFile(String sPath){
+        boolean flag = false;
+        File file = new File(sPath);
+        if(file.isFile() && file.exists()){
+            flag = file.delete();
+        }
+        return flag;
+    }
+
+    /**
+     * 删除目录以及目录下的文件
+     * @param sPath ：目录路径
+     * @return ：是否删除成功
+     */
+    private static boolean deleteDirectory(String sPath){
+        if(!sPath.endsWith(File.separator)){
+            sPath = sPath + File.separator;
+        }
+
+        File dirFile = new File(sPath);
+        if(!dirFile.exists() || !dirFile.isDirectory()){
+            return false;
+        }
+        boolean flag = true;
+        File[] files = dirFile.listFiles();
+        if(files!=null){
+            for (File ff : files) {
+                if(ff.isFile()){
+                    flag = deleteFile(ff.getAbsolutePath());
+                    if(!flag) { break; }
+                }else {
+                    flag = deleteDirectory(ff.getAbsolutePath());
+                    if(!flag) { break; }
+                }
+            }
+        }
+
+        if(!flag) { return false; }
+        //删除当前目录
+        return dirFile.delete();
+    }
+
 }
